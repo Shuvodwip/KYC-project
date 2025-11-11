@@ -1,34 +1,65 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { SimpleCustomerForm } from './pages/SimpleCustomerForm'
+import { AdminLoginPage } from './pages/AdminLoginPage'
+import { AdminDashboard } from './pages/AdminDashboard'
 import './App.css'
 
+type Page = 'form' | 'admin-login' | 'admin-dashboard'
+
 function App() {
-  const [count, setCount] = useState(0)
+  const [currentPage, setCurrentPage] = useState<Page>('form')
+  const [adminToken, setAdminToken] = useState<string | null>(localStorage.getItem('adminToken'))
+
+  const handleLoginSuccess = (token: string) => {
+    localStorage.setItem('adminToken', token)
+    setAdminToken(token)
+    setCurrentPage('admin-dashboard')
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('adminToken')
+    setAdminToken(null)
+    setCurrentPage('form')
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className="app-container">
+      <nav className="app-navbar">
+        <div className="navbar-brand">KYC System</div>
+        <div className="navbar-links">
+          <button
+            className={`nav-button ${currentPage === 'form' ? 'active' : ''}`}
+            onClick={() => {
+              setCurrentPage('form')
+              setAdminToken(null)
+              localStorage.removeItem('adminToken')
+            }}
+          >
+            Customer Form
+          </button>
+          {!adminToken ? (
+            <button
+              className={`nav-button ${currentPage === 'admin-login' ? 'active' : ''}`}
+              onClick={() => setCurrentPage('admin-login')}
+            >
+              Admin Login
+            </button>
+          ) : (
+            <button className="nav-button active">Admin Logged In</button>
+          )}
+        </div>
+      </nav>
+
+      <main className="app-main">
+        {currentPage === 'form' && <SimpleCustomerForm />}
+        {currentPage === 'admin-login' && !adminToken && (
+          <AdminLoginPage onLoginSuccess={handleLoginSuccess} />
+        )}
+        {currentPage === 'admin-dashboard' && adminToken && (
+          <AdminDashboard token={adminToken} onLogout={handleLogout} />
+        )}
+      </main>
+    </div>
   )
 }
 
