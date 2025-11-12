@@ -4,7 +4,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
-import { initializeDataStore } from './utils/fileStorage.js';
+import { connectDB, disconnectDB } from './utils/db.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 import kycRoutes from './routes/kycRoutes.js';
 import authRoutes from './routes/authRoutes.js';
@@ -95,9 +95,8 @@ app.use(errorHandler);
 
 async function startServer() {
   try {
-    // Initialize data store
-    await initializeDataStore();
-    console.log('✓ Data store initialized');
+    // Connect to MongoDB Atlas
+    await connectDB();
 
     // Start server
     app.listen(PORT, () => {
@@ -106,7 +105,6 @@ async function startServer() {
       console.log(`${'='.repeat(60)}`);
       console.log(`📍 Server: http://localhost:${PORT}`);
       console.log(`🌐 CORS Origin: ${FRONTEND_URL}`);
-      console.log(`📁 Data Directory: ${process.env.DATA_DIR || './data'}`);
       console.log(`${'='.repeat(60)}\n`);
 
       console.log('Endpoints:');
@@ -125,13 +123,15 @@ async function startServer() {
 }
 
 // Handle graceful shutdown
-process.on('SIGTERM', () => {
+process.on('SIGTERM', async () => {
   console.log('\nSIGTERM received, shutting down gracefully...');
+  await disconnectDB();
   process.exit(0);
 });
 
-process.on('SIGINT', () => {
+process.on('SIGINT', async () => {
   console.log('\nSIGINT received, shutting down gracefully...');
+  await disconnectDB();
   process.exit(0);
 });
 
