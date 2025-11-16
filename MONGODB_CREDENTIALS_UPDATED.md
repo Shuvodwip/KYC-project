@@ -26,7 +26,7 @@
 
 **Updated Connection String:**
 ```
-mongodb+srv://shuvo787:4UgcVr7ZjLUJtkVf@cluster0.nybbnjy.mongodb.net/?appName=Cluster0
+your_mongodb_connection_string
 ```
 
 ---
@@ -87,8 +87,8 @@ http://localhost:5173
 
 ```diff
   # MongoDB Atlas Configuration
-- MONGODB_URI=mongodb+srv://shuvo787:%40123456789@cluster0.nybbnjy.mongodb.net/?appName=Cluster0
-+ MONGODB_URI=mongodb+srv://shuvo787:4UgcVr7ZjLUJtkVf@cluster0.nybbnjy.mongodb.net/?appName=Cluster0
+- MONGODB_URI=your_mongodb_connection_string
++ MONGODB_URI=your_mongodb_connection_string
   MONGODB_DB_NAME=kyc_database
 ```
 

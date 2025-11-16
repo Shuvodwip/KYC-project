@@ -172,6 +172,31 @@
   border-bottom: none;
 }
 
+.summary-banner {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-left: 4px solid #f59e0b;
+  padding: 1rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.summary-label {
+  font-weight: 700;
+  color: #92400e;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.summary-text {
+  margin: 0;
+  color: #78350f;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  font-style: italic;
+}
+
 .customer-name h3 {
   margin: 0;
   font-size: 1.25rem;

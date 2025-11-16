@@ -12,12 +12,12 @@
 
 ### Before
 ```
-MONGODB_URI=mongodb+srv://shuvo787:%40123456789@cluster0.nybbnjy.mongodb.net/?appName=Cluster0
+MONGODB_URI=your_mongodb_connection_string
 ```
 
 ### After ✅
 ```
-MONGODB_URI=mongodb+srv://shuvo787:4UgcVr7ZjLUJtkVf@cluster0.nybbnjy.mongodb.net/?appName=Cluster0
+MONGODB_URI=your_mongodb_connection_string
 ```
 
 ### Changes
@@ -108,7 +108,7 @@ Submission ID: KYC-XXXXXXXX
 **Solution:** Verify credentials in `.env`
 ```bash
 # File: backend/.env
-MONGODB_URI=mongodb+srv://shuvo787:4UgcVr7ZjLUJtkVf@cluster0.nybbnjy.mongodb.net/?appName=Cluster0
+MONGODB_URI=your_mongodb_connection_string
 ```
 
 ### Problem: "Port already in use"
@@ -139,7 +139,7 @@ NODE_ENV=development
 FRONTEND_URL=http://localhost:5173
 
 # MongoDB Atlas Configuration
-MONGODB_URI=mongodb+srv://shuvo787:4UgcVr7ZjLUJtkVf@cluster0.nybbnjy.mongodb.net/?appName=Cluster0
+MONGODB_URI=your_mongodb_connection_string
 MONGODB_DB_NAME=kyc_database
 
 # Data Storage

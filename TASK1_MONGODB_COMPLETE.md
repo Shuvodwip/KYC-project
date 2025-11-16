@@ -190,7 +190,7 @@ backend/
 
 **MongoDB Atlas Credentials:**
 ```
-URL: mongodb+srv://shuvo787:%40123456789@cluster0.nybbnjy.mongodb.net/?appName=Cluster0
+URL: your_mongodb_connection_string
 Database: kyc_database
 ```
 

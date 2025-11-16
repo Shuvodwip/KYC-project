@@ -148,7 +148,7 @@ Submission ID: KYC-XXXXX
 
 ✅ **backend/.env** - MongoDB connection updated
 ```
-MONGODB_URI=mongodb+srv://shuvo787:4UgcVr7ZjLUJtkVf@cluster0.nybbnjy.mongodb.net/?appName=Cluster0
+MONGODB_URI=your_mongodb_connection_string
 ```
 
 ---

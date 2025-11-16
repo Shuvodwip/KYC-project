@@ -10,6 +10,7 @@ export interface CustomerData {
   nationality: string
   address: string
   city: string
+  summary?: string
   createdAt?: string
 }
 
@@ -29,6 +30,30 @@ export function generateCustomerPDF(customer: CustomerData) {
   // Separator line
   doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke()
   doc.moveDown(1)
+
+  // AI SUMMARY SECTION (NEW)
+  if (customer.summary) {
+    doc
+      .fontSize(14)
+      .font('Helvetica-Bold')
+      .text('AI SUMMARY', { align: 'center' })
+      .moveDown(0.3)
+
+    doc
+      .fontSize(11)
+      .font('Helvetica')
+      .fillColor('#2C5AA0')
+      .text(customer.summary, {
+        align: 'center',
+        width: 500,
+      })
+      .fillColor('black')
+      .moveDown(1)
+
+    // Separator line
+    doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke()
+    doc.moveDown(1)
+  }
 
   // Document info
   doc

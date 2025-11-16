@@ -7,11 +7,12 @@ import {
   getPaginatedSubmissions,
   getDashboardStats,
 } from '../utils/mongodbService.js';
+import { generateKYCSummary } from './llmService.js';
 import type { KYCFormData, KYCSubmission } from '../utils/types.js';
 
 export class KYCService {
   /**
-   * Submit KYC data
+   * Submit KYC data and generate summary asynchronously
    */
   static async submitKYC(formData: KYCFormData): Promise<KYCSubmission> {
     const id = `KYC-${uuidv4().substring(0, 8).toUpperCase()}`;
@@ -27,7 +28,33 @@ export class KYCService {
     };
 
     await saveSubmission(submission);
+
+    // Generate summary asynchronously (don't wait for it)
+    this.generateAndStoreSummary(id, formData).catch((error) => {
+      console.error(`Failed to generate summary for ${id}:`, error);
+    });
+
     return submission;
+  }
+
+  /**
+   * Generate and store summary for a submission
+   */
+  private static async generateAndStoreSummary(
+    submissionId: string,
+    data: KYCFormData
+  ): Promise<void> {
+    try {
+      console.log(`[LLM] Generating summary for submission ${submissionId}...`);
+      const summary = await generateKYCSummary(data);
+      
+      console.log(`[LLM] Summary generated: ${summary}`);
+      await this.addSummary(submissionId, summary);
+      
+      console.log(`[LLM] Summary stored for submission ${submissionId}`);
+    } catch (error) {
+      console.error(`[LLM] Error generating summary for ${submissionId}:`, error);
+    }
   }
 
   /**

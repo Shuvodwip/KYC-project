@@ -7,6 +7,8 @@ import {
   getDashboardStats,
   searchSubmissions,
   exportCustomerPDF,
+  generateSummaryForSubmission,
+  getSubmissionWithSummary,
 } from '../controllers/kycController.js';
 import { verifyToken } from '../middleware/authMiddleware.js';
 
@@ -22,6 +24,12 @@ router.post('/submit', submitKYC);
 // GET /api/kyc/status/:id - Get submission status
 router.get('/status/:id', getSubmission);
 
+// GET /api/kyc/summary/:id - Get submission with summary
+router.get('/summary/:id', getSubmissionWithSummary);
+
+// POST /api/kyc/generate-summary/:id - Generate summary for submission (admin)
+router.post('/generate-summary/:id', verifyToken, generateSummaryForSubmission);
+
 // GET /api/kyc/all - Get all submissions (admin)
 router.get('/all', verifyToken, getAllSubmissions);
 
@@ -35,3 +43,4 @@ router.get('/search', searchSubmissions);
 router.get('/export/:id', verifyToken, exportCustomerPDF);
 
 export default router;
+

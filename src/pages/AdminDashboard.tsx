@@ -11,6 +11,7 @@ interface Customer {
   nationality: string
   address: string
   city: string
+  summary?: string
   createdAt?: string
 }
 
@@ -61,6 +62,7 @@ export function AdminDashboard({ token, onLogout }: AdminDashboardProps) {
         nationality: submission.data?.nationality || '',
         address: submission.data?.address || '',
         city: submission.data?.city || '',
+        summary: submission.summary || undefined,
         createdAt: submission.createdAt,
       }))
       
@@ -147,6 +149,13 @@ export function AdminDashboard({ token, onLogout }: AdminDashboardProps) {
                       <span className="customer-id">ID: {customer.id.substring(0, 8)}</span>
                     </div>
                   </div>
+
+                  {customer.summary && (
+                    <div className="summary-banner">
+                      <span className="summary-label">🤖 AI Summary:</span>
+                      <p className="summary-text">{customer.summary}</p>
+                    </div>
+                  )}
 
                   <div className="card-body">
                     <div className="info-row">

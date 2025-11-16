@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import { KYCService } from '../services/kycService.js';
 import { generateCustomerPDF } from '../services/pdfService.js';
+import { generateKYCSummary } from '../services/llmService.js';
 import type { KYCFormData, ApiResponse, SubmissionResponse } from '../utils/types.js';
 
 /**
@@ -195,6 +196,7 @@ export async function exportCustomerPDF(
       nationality: submission.data?.nationality || '',
       address: submission.data?.address || '',
       city: submission.data?.city || '',
+      summary: submission.summary || undefined,
       createdAt: submission.timestamp,
     };
 
@@ -211,3 +213,87 @@ export async function exportCustomerPDF(
     next(error);
   }
 }
+
+/**
+ * Generate summary for a specific submission
+ */
+export async function generateSummaryForSubmission(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { id } = req.params;
+
+    // Get the submission
+    const submission = await KYCService.getSubmission(id);
+    if (!submission) {
+      const error = new Error('Submission not found');
+      (error as any).status = 404;
+      throw error;
+    }
+
+    // Generate summary
+    const summary = await generateKYCSummary(submission.data);
+
+    // Store summary
+    await KYCService.addSummary(id, summary);
+
+    const response: ApiResponse<{ id: string; summary: string }> = {
+      success: true,
+      status: 200,
+      message: 'Summary generated successfully',
+      data: {
+        id,
+        summary,
+      },
+      timestamp: new Date().toISOString(),
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * Get submission with summary
+ */
+export async function getSubmissionWithSummary(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { id } = req.params;
+
+    const submission = await KYCService.getSubmission(id);
+
+    if (!submission) {
+      const error = new Error('Submission not found');
+      (error as any).status = 404;
+      throw error;
+    }
+
+    const response: ApiResponse<any> = {
+      success: true,
+      status: 200,
+      message: 'Submission retrieved successfully',
+      data: {
+        id: submission.id,
+        status: submission.status,
+        summary: submission.summary || 'Summary pending...',
+        customerName: `${submission.data.firstName} ${submission.data.lastName}`,
+        email: submission.data.email,
+        timestamp: submission.timestamp,
+        data: submission.data,
+      },
+      timestamp: new Date().toISOString(),
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+}
+

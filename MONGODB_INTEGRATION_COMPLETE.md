@@ -114,7 +114,7 @@ Changes:
 Added:
 ```env
 # MongoDB Atlas Configuration
-MONGODB_URI=mongodb+srv://shuvo787:%40123456789@cluster0.nybbnjy.mongodb.net/?appName=Cluster0
+MONGODB_URI=your_mongodb_connection_string
 MONGODB_DB_NAME=kyc_database
 ```
 
