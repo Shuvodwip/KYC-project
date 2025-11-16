@@ -297,3 +297,118 @@ export async function getSubmissionWithSummary(
   }
 }
 
+/**
+ * Approve a customer submission
+ */
+export async function approveCustomer(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { id } = req.params;
+
+    const submission = await KYCService.updateSubmissionStatus(id, 'approved');
+
+    if (!submission) {
+      const error = new Error('Submission not found');
+      (error as any).status = 404;
+      throw error;
+    }
+
+    const response: ApiResponse<any> = {
+      success: true,
+      status: 200,
+      message: 'Customer approved successfully',
+      data: {
+        id: submission.id,
+        status: submission.status,
+        customerName: `${submission.data.firstName} ${submission.data.lastName}`,
+        email: submission.data.email,
+        summary: submission.summary,
+        timestamp: submission.timestamp,
+      },
+      timestamp: new Date().toISOString(),
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * Reject a customer submission
+ */
+export async function rejectCustomer(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { id } = req.params;
+
+    const submission = await KYCService.updateSubmissionStatus(id, 'rejected');
+
+    if (!submission) {
+      const error = new Error('Submission not found');
+      (error as any).status = 404;
+      throw error;
+    }
+
+    const response: ApiResponse<any> = {
+      success: true,
+      status: 200,
+      message: 'Customer rejected successfully',
+      data: {
+        id: submission.id,
+        status: submission.status,
+        customerName: `${submission.data.firstName} ${submission.data.lastName}`,
+        email: submission.data.email,
+        summary: submission.summary,
+        timestamp: submission.timestamp,
+      },
+      timestamp: new Date().toISOString(),
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * Delete a customer submission
+ */
+export async function deleteCustomer(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { id } = req.params;
+
+    const deleted = await KYCService.deleteSubmission(id);
+
+    if (!deleted) {
+      const error = new Error('Submission not found');
+      (error as any).status = 404;
+      throw error;
+    }
+
+    const response: ApiResponse<{ id: string }> = {
+      success: true,
+      status: 200,
+      message: 'Customer deleted successfully',
+      data: {
+        id,
+      },
+      timestamp: new Date().toISOString(),
+    };
+
+    res.status(200).json(response);
+  } catch (error) {
+    next(error);
+  }
+}
+

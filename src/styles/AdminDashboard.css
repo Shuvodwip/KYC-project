@@ -246,6 +246,83 @@
   padding-top: 1.5rem;
 }
 
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.action-buttons button {
+  flex: 1;
+  padding: 0.875rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.approve-button {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.approve-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px rgba(16, 185, 129, 0.3);
+}
+
+.approve-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.reject-button {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+}
+
+.reject-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px rgba(239, 68, 68, 0.3);
+}
+
+.reject-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.rejected-label {
+  color: #dc2626;
+  font-weight: 600;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.375rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.status-approved {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-rejected {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.status-pending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
 .pdf-button {
   width: 100%;
   padding: 0.875rem 1rem;

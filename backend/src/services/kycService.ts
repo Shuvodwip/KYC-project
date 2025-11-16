@@ -6,6 +6,7 @@ import {
   searchSubmissions,
   getPaginatedSubmissions,
   getDashboardStats,
+  deleteSubmission,
 } from '../utils/mongodbService.js';
 import { generateKYCSummary } from './llmService.js';
 import type { KYCFormData, KYCSubmission } from '../utils/types.js';
@@ -110,6 +111,13 @@ export class KYCService {
       summary,
       updatedAt: new Date().toISOString(),
     });
+  }
+
+  /**
+   * Delete submission
+   */
+  static async deleteSubmission(id: string): Promise<boolean> {
+    return await deleteSubmission(id);
   }
 
   /**

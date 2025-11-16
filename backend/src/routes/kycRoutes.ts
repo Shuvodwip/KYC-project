@@ -9,6 +9,9 @@ import {
   exportCustomerPDF,
   generateSummaryForSubmission,
   getSubmissionWithSummary,
+  approveCustomer,
+  rejectCustomer,
+  deleteCustomer,
 } from '../controllers/kycController.js';
 import { verifyToken } from '../middleware/authMiddleware.js';
 
@@ -41,6 +44,15 @@ router.get('/search', searchSubmissions);
 
 // GET /api/kyc/export/:id - Export customer PDF (admin)
 router.get('/export/:id', verifyToken, exportCustomerPDF);
+
+// PUT /api/kyc/approve/:id - Approve customer (admin)
+router.put('/approve/:id', verifyToken, approveCustomer);
+
+// PUT /api/kyc/reject/:id - Reject customer (admin)
+router.put('/reject/:id', verifyToken, rejectCustomer);
+
+// DELETE /api/kyc/delete/:id - Delete customer (admin)
+router.delete('/delete/:id', verifyToken, deleteCustomer);
 
 export default router;
 

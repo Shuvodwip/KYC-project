@@ -13,6 +13,7 @@ interface Customer {
   city: string
   summary?: string
   createdAt?: string
+  status?: 'approved' | 'rejected' | 'pending'
 }
 
 interface AdminDashboardProps {
@@ -25,6 +26,8 @@ export function AdminDashboard({ token, onLogout }: AdminDashboardProps) {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [downloadingId, setDownloadingId] = useState<string | null>(null)
+  const [approvalProcessing, setApprovalProcessing] = useState<string | null>(null)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   useEffect(() => {
     fetchCustomers()
@@ -64,6 +67,7 @@ export function AdminDashboard({ token, onLogout }: AdminDashboardProps) {
         city: submission.data?.city || '',
         summary: submission.summary || undefined,
         createdAt: submission.createdAt,
+        status: submission.status || 'pending',
       }))
       
       setCustomers(customers)
@@ -104,6 +108,88 @@ export function AdminDashboard({ token, onLogout }: AdminDashboardProps) {
       alert(err instanceof Error ? err.message : 'Error downloading PDF')
     } finally {
       setDownloadingId(null)
+    }
+  }
+
+  const handleApprove = async (customer: Customer) => {
+    try {
+      setApprovalProcessing(customer.id)
+
+      const response = await fetch(
+        `http://localhost:5000/api/kyc/approve/${customer.id}`,
+        {
+          method: 'PUT',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ status: 'approved' }),
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error('Failed to approve customer')
+      }
+
+      // Update local state
+      setCustomers(customers.map(c => 
+        c.id === customer.id ? { ...c, status: 'approved' } : c
+      ))
+
+      alert('✅ Customer approved successfully!')
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Error approving customer')
+    } finally {
+      setApprovalProcessing(null)
+    }
+  }
+
+  const handleReject = async (customer: Customer) => {
+    try {
+      setApprovalProcessing(customer.id)
+
+      const response = await fetch(
+        `http://localhost:5000/api/kyc/reject/${customer.id}`,
+        {
+          method: 'PUT',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ status: 'rejected' }),
+        }
+      )
+
+      if (!response.ok) {
+        throw new Error('Failed to reject customer')
+      }
+
+      // Now delete the customer after rejection
+      setDeletingId(customer.id)
+      const deleteResponse = await fetch(
+        `http://localhost:5000/api/kyc/delete/${customer.id}`,
+        {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+
+      if (!deleteResponse.ok) {
+        throw new Error('Failed to delete customer')
+      }
+
+      // Remove from local state
+      setCustomers(customers.filter(c => c.id !== customer.id))
+
+      alert('❌ Customer rejected and deleted successfully!')
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Error rejecting customer')
+    } finally {
+      setApprovalProcessing(null)
+      setDeletingId(null)
     }
   }
 
@@ -196,20 +282,50 @@ export function AdminDashboard({ token, onLogout }: AdminDashboardProps) {
                         </span>
                       </div>
                     )}
+
+                    {customer.status && (
+                      <div className="info-row">
+                        <span className="label">✅ Status:</span>
+                        <span className={`status-badge status-${customer.status}`}>
+                          {customer.status.charAt(0).toUpperCase() + customer.status.slice(1)}
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   <div className="card-footer">
-                    <button
-                      className="pdf-button"
-                      onClick={() => handleDownloadPDF(customer)}
-                      disabled={downloadingId === customer.id}
-                    >
-                      {downloadingId === customer.id ? (
-                        <>⏳ Generating...</>
-                      ) : (
-                        <>📥 Download PDF</>
-                      )}
-                    </button>
+                    {customer.status === 'approved' ? (
+                      <>
+                        <button
+                          className="pdf-button"
+                          onClick={() => handleDownloadPDF(customer)}
+                          disabled={downloadingId === customer.id}
+                        >
+                          {downloadingId === customer.id ? (
+                            <>⏳ Generating...</>
+                          ) : (
+                            <>📥 Download PDF</>
+                          )}
+                        </button>
+                      </>
+                    ) : (
+                      <div className="action-buttons">
+                        <button
+                          className="approve-button"
+                          onClick={() => handleApprove(customer)}
+                          disabled={approvalProcessing === customer.id}
+                        >
+                          {approvalProcessing === customer.id ? '⏳ Processing...' : '✅ Approve'}
+                        </button>
+                        <button
+                          className="reject-button"
+                          onClick={() => handleReject(customer)}
+                          disabled={approvalProcessing === customer.id || deletingId === customer.id}
+                        >
+                          {approvalProcessing === customer.id || deletingId === customer.id ? '⏳ Processing...' : '❌ Reject'}
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
