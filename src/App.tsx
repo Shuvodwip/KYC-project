@@ -1,13 +1,14 @@
 import { useState } from 'react'
+import { LandingPage } from './pages/LandingPage'
 import { SimpleCustomerForm } from './pages/SimpleCustomerForm'
 import { AdminLoginPage } from './pages/AdminLoginPage'
 import { AdminDashboard } from './pages/AdminDashboard'
 import './App.css'
 
-type Page = 'form' | 'admin-login' | 'admin-dashboard'
+type Page = 'landing' | 'form' | 'admin-login' | 'admin-dashboard'
 
 function App() {
-  const [currentPage, setCurrentPage] = useState<Page>('form')
+  const [currentPage, setCurrentPage] = useState<Page>('landing')
   const [adminToken, setAdminToken] = useState<string | null>(localStorage.getItem('adminToken'))
 
   const handleLoginSuccess = (token: string) => {
@@ -19,38 +20,55 @@ function App() {
   const handleLogout = () => {
     localStorage.removeItem('adminToken')
     setAdminToken(null)
-    setCurrentPage('form')
+    setCurrentPage('landing')
   }
+
+  // Hide navbar on landing page
+  const showNavbar = currentPage !== 'landing'
 
   return (
     <div className="app-container">
-      <nav className="app-navbar">
-        <div className="navbar-brand">KYC System</div>
-        <div className="navbar-links">
-          <button
-            className={`nav-button ${currentPage === 'form' ? 'active' : ''}`}
-            onClick={() => {
-              setCurrentPage('form')
-              setAdminToken(null)
-              localStorage.removeItem('adminToken')
-            }}
+      {showNavbar && (
+        <nav className="app-navbar">
+          <div 
+            className="navbar-brand"
+            onClick={() => setCurrentPage('landing')}
+            style={{ cursor: 'pointer' }}
           >
-            Customer Form
-          </button>
-          {!adminToken ? (
+            KYC System
+          </div>
+          <div className="navbar-links">
             <button
-              className={`nav-button ${currentPage === 'admin-login' ? 'active' : ''}`}
-              onClick={() => setCurrentPage('admin-login')}
+              className={`nav-button ${currentPage === 'form' ? 'active' : ''}`}
+              onClick={() => {
+                setCurrentPage('form')
+                setAdminToken(null)
+                localStorage.removeItem('adminToken')
+              }}
             >
-              Admin Login
+              Customer Form
             </button>
-          ) : (
-            <button className="nav-button active">Admin Logged In</button>
-          )}
-        </div>
-      </nav>
+            {!adminToken ? (
+              <button
+                className={`nav-button ${currentPage === 'admin-login' ? 'active' : ''}`}
+                onClick={() => setCurrentPage('admin-login')}
+              >
+                Admin Login
+              </button>
+            ) : (
+              <button 
+                className="nav-button active"
+                onClick={() => setCurrentPage('admin-dashboard')}
+              >
+                Admin Dashboard
+              </button>
+            )}
+          </div>
+        </nav>
+      )}
 
       <main className="app-main">
+        {currentPage === 'landing' && <LandingPage onGetStarted={() => setCurrentPage('form')} />}
         {currentPage === 'form' && <SimpleCustomerForm />}
         {currentPage === 'admin-login' && !adminToken && (
           <AdminLoginPage onLoginSuccess={handleLoginSuccess} />
