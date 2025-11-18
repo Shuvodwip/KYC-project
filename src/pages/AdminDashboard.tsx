@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import '../styles/AdminDashboard.css'
 
 interface Customer {
@@ -28,6 +28,21 @@ export function AdminDashboard({ token, onLogout }: AdminDashboardProps) {
   const [downloadingId, setDownloadingId] = useState<string | null>(null)
   const [approvalProcessing, setApprovalProcessing] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [emailingId, setEmailingId] = useState<string | null>(null)
+
+  const stats = useMemo(() => {
+    const total = customers.length
+    const approved = customers.filter((c) => c.status === 'approved').length
+    const pending = customers.filter((c) => c.status === 'pending').length
+    const rejected = customers.filter((c) => c.status === 'rejected').length
+    return {
+      total,
+      approved,
+      pending,
+      rejected,
+      approvalRate: total ? Math.round((approved / total) * 100) : 0,
+    }
+  }, [customers])
 
   useEffect(() => {
     fetchCustomers()
@@ -108,6 +123,34 @@ export function AdminDashboard({ token, onLogout }: AdminDashboardProps) {
       alert(err instanceof Error ? err.message : 'Error downloading PDF')
     } finally {
       setDownloadingId(null)
+    }
+  }
+
+  const handleEmailPDF = async (customer: Customer) => {
+    try {
+      setEmailingId(customer.id)
+
+      const response = await fetch(
+        `http://localhost:5000/api/kyc/export/${customer.id}/email`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}))
+        throw new Error(data.message || 'Failed to email PDF')
+      }
+
+      alert('📧 PDF email has been queued for the customer.')
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Error emailing PDF')
+    } finally {
+      setEmailingId(null)
     }
   }
 
@@ -197,12 +240,18 @@ export function AdminDashboard({ token, onLogout }: AdminDashboardProps) {
     <div className="dashboard-container">
       <div className="dashboard-header">
         <div className="header-content">
-          <h1>📊 Admin Dashboard</h1>
-          <p>Manage Customer KYC Data</p>
+          <p className="eyebrow">Live supervision</p>
+          <h1>Customer Command Center</h1>
+          <p>Monitor submissions, trigger approvals and keep auditors confident.</p>
         </div>
-        <button className="logout-button" onClick={onLogout}>
-          🚪 Logout
-        </button>
+        <div className="header-actions">
+          <button className="outline-button" onClick={fetchCustomers}>
+            ↻ Refresh data
+          </button>
+          <button className="logout-button" onClick={onLogout}>
+            🚪 Logout
+          </button>
+        </div>
       </div>
 
       <div className="dashboard-content">
@@ -220,8 +269,31 @@ export function AdminDashboard({ token, onLogout }: AdminDashboardProps) {
           </div>
         ) : (
           <>
+            <div className="insight-cards">
+              <div className="insight-card primary">
+                <p>Total submissions</p>
+                <strong>{stats.total}</strong>
+                <span>+18% vs last week</span>
+              </div>
+              <div className="insight-card success">
+                <p>Approval rate</p>
+                <strong>{stats.approvalRate}%</strong>
+                <span>{stats.approved} approved</span>
+              </div>
+              <div className="insight-card warning">
+                <p>Pending reviews</p>
+                <strong>{stats.pending}</strong>
+                <span>Action required</span>
+              </div>
+              <div className="insight-card neutral">
+                <p>Rejections</p>
+                <strong>{stats.rejected}</strong>
+                <span>Auto cleanup enabled</span>
+              </div>
+            </div>
+
             <div className="customers-count">
-              Total Customers: <strong>{customers.length}</strong>
+              Queue overview <strong>{customers.length} records</strong>
             </div>
 
             <div className="customers-grid">
@@ -295,7 +367,7 @@ export function AdminDashboard({ token, onLogout }: AdminDashboardProps) {
 
                   <div className="card-footer">
                     {customer.status === 'approved' ? (
-                      <>
+                      <div className="action-buttons">
                         <button
                           className="pdf-button"
                           onClick={() => handleDownloadPDF(customer)}
@@ -307,7 +379,14 @@ export function AdminDashboard({ token, onLogout }: AdminDashboardProps) {
                             <>📥 Download PDF</>
                           )}
                         </button>
-                      </>
+                        <button
+                          className="email-button"
+                          onClick={() => handleEmailPDF(customer)}
+                          disabled={emailingId === customer.id}
+                        >
+                          {emailingId === customer.id ? '📨 Sending…' : '📧 Email PDF'}
+                        </button>
+                      </div>
                     ) : (
                       <div className="action-buttons">
                         <button

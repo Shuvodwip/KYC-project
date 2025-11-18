@@ -7,6 +7,7 @@ import {
   getDashboardStats,
   searchSubmissions,
   exportCustomerPDF,
+  emailCustomerPDF,
   generateSummaryForSubmission,
   getSubmissionWithSummary,
   approveCustomer,
@@ -42,8 +43,11 @@ router.get('/stats', getDashboardStats);
 // GET /api/kyc/search - Search submissions
 router.get('/search', searchSubmissions);
 
-// GET /api/kyc/export/:id - Export customer PDF (admin)
+// GET /api/kyc/export/:id - Export customer PDF (admin download)
 router.get('/export/:id', verifyToken, exportCustomerPDF);
+
+// POST /api/kyc/export/:id/email - Queue PDF email to customer
+router.post('/export/:id/email', verifyToken, emailCustomerPDF);
 
 // PUT /api/kyc/approve/:id - Approve customer (admin)
 router.put('/approve/:id', verifyToken, approveCustomer);

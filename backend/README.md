@@ -59,6 +59,23 @@ Endpoints:
 
 ---
 
+### 4. Start RabbitMQ + PDF Worker (for email delivery)
+
+1. Run RabbitMQ locally (Docker example):
+   ```bash
+   docker run -d --hostname kyc-rabbit --name rabbitmq \
+     -p 5672:5672 -p 15672:15672 rabbitmq:3.13-management
+   ```
+2. Configure the mail + RabbitMQ values inside `.env` (`RABBITMQ_URL`, `MAIL_HOST`, etc.).
+3. Start the worker in a second terminal:
+   ```bash
+   npm run worker:pdf
+   ```
+
+The API will enqueue jobs via `POST /api/kyc/export/:id/email`, and the worker will generate the PDF + email it to the customer.
+
+---
+
 ## 📋 API Endpoints
 
 ### 1. Submit KYC Data

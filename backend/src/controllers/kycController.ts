@@ -2,6 +2,7 @@ import type { Request, Response, NextFunction } from 'express';
 import { KYCService } from '../services/kycService.js';
 import { generateCustomerPDF } from '../services/pdfService.js';
 import { generateKYCSummary } from '../services/llmService.js';
+import { enqueuePdfJob } from '../queues/pdfQueue.js';
 import type { KYCFormData, ApiResponse, SubmissionResponse } from '../utils/types.js';
 
 /**
@@ -209,6 +210,53 @@ export async function exportCustomerPDF(
     );
 
     pdfStream.pipe(res);
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * Queue PDF email delivery
+ */
+export async function emailCustomerPDF(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { id } = req.params;
+
+    const submission = await KYCService.getSubmission(id);
+    if (!submission) {
+      const error = new Error('Customer not found');
+      (error as any).status = 404;
+      throw error;
+    }
+
+    const email = submission.data?.email;
+    if (!email) {
+      const error = new Error('Customer email address is missing');
+      (error as any).status = 400;
+      throw error;
+    }
+
+    await enqueuePdfJob({
+      submissionId: submission.id,
+      customerEmail: email,
+      firstName: submission.data?.firstName || '',
+      lastName: submission.data?.lastName || '',
+    });
+
+    res.status(202).json({
+      success: true,
+      status: 202,
+      message: 'PDF generation queued. The customer will receive an email shortly.',
+      data: {
+        id: submission.id,
+        email,
+      },
+      timestamp: new Date().toISOString(),
+    });
   } catch (error) {
     next(error);
   }

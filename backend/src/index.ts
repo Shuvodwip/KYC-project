@@ -8,6 +8,7 @@ import { connectDB, disconnectDB } from './utils/db.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 import kycRoutes from './routes/kycRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import { initPdfQueue, closePdfQueue } from './queues/pdfQueue.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -95,8 +96,9 @@ app.use(errorHandler);
 
 async function startServer() {
   try {
-    // Connect to MongoDB Atlas
+    // Connect to MongoDB Atlas (with fallback to JSON)
     await connectDB();
+    await initPdfQueue();
 
     // Start server
     app.listen(PORT, () => {
@@ -117,7 +119,7 @@ async function startServer() {
       console.log('');
     });
   } catch (error) {
-    console.error('Failed to start server:', error);
+    console.error('❌ Failed to start server:', error);
     process.exit(1);
   }
 }
@@ -126,12 +128,14 @@ async function startServer() {
 process.on('SIGTERM', async () => {
   console.log('\nSIGTERM received, shutting down gracefully...');
   await disconnectDB();
+  await closePdfQueue();
   process.exit(0);
 });
 
 process.on('SIGINT', async () => {
   console.log('\nSIGINT received, shutting down gracefully...');
   await disconnectDB();
+  await closePdfQueue();
   process.exit(0);
 });
 

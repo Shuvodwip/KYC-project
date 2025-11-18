@@ -138,3 +138,14 @@ function drawInfoRow(doc: any, label: string, value: string): void {
 
   doc.moveDown(0.8)
 }
+
+export function generateCustomerPDFBuffer(customer: CustomerData): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    const doc = generateCustomerPDF(customer)
+    const chunks: Buffer[] = []
+
+    doc.on('data', (chunk: Buffer) => chunks.push(chunk))
+    doc.on('end', () => resolve(Buffer.concat(chunks)))
+    doc.on('error', reject)
+  })
+}
