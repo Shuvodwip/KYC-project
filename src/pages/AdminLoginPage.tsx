@@ -57,84 +57,112 @@ export function AdminLoginPage({ onLoginSuccess }: AdminLoginPageProps) {
 
   return (
     <div className="login-container">
-      <div className="login-card">
-        <div className="login-header">
-          <h1>🔐 Admin Portal</h1>
-          <p>Secure Access to Customer Dashboard</p>
-        </div>
-
-        <form onSubmit={handleSubmit(onSubmit)} className="login-form">
-          {error && <div className="error-alert">{error}</div>}
-
-          <div className="form-group">
-            <label htmlFor="email">Email Address</label>
-            <input
-              id="email"
-              type="email"
-              placeholder="admin@kyc.com"
-              {...register('email')}
-              className={errors.email ? 'input-error' : ''}
-              disabled={isLoading}
-            />
-            {errors.email && <span className="error-message">{errors.email.message}</span>}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              {...register('password')}
-              className={errors.password ? 'input-error' : ''}
-              disabled={isLoading}
-            />
-            {errors.password && <span className="error-message">{errors.password.message}</span>}
-          </div>
-
-          <button
-            type="submit"
-            className="login-button"
-            disabled={isLoading}
-          >
-            {isLoading ? '⏳ Logging in...' : '🔓 Login'}
-          </button>
-        </form>
-
-        <div className="demo-section">
-          <button
-            type="button"
-            className="demo-toggle"
-            onClick={() => setShowDemoCredentials(!showDemoCredentials)}
-          >
-            {showDemoCredentials ? '✕ Hide Demo Credentials' : '📝 Show Demo Credentials'}
-          </button>
-
-          {showDemoCredentials && (
-            <div className="demo-credentials">
-              <div className="credential-item">
-                <span className="label">Email:</span>
-                <span className="value">admin@kyc.com</span>
+      <div className="login-shell">
+        <aside className="login-aside">
+          <div className="aside-content">
+            <span className="aside-pill">Operations suite</span>
+            <h2>Admin dashboard with full audit control</h2>
+            <p>
+              Review submissions, trigger AI summaries and export compliance-ready PDFs from one place.
+              Built for analysts, secured for auditors.
+            </p>
+            <div className="aside-stats">
+              <div>
+                <strong>1.3k</strong>
+                <span>Approvals this quarter</span>
               </div>
-              <div className="credential-item">
-                <span className="label">Password:</span>
-                <span className="value">admin123</span>
+              <div>
+                <strong>4.8/5</strong>
+                <span>Ops team satisfaction</span>
               </div>
-              <p className="demo-note">
-                💡 Use these credentials to access the admin dashboard and view all registered customers.
-              </p>
             </div>
-          )}
-        </div>
+            <ul>
+              <li>Realtime queue overview</li>
+              <li>Regulator-friendly audit logs</li>
+              <li>Deeplinks into customer PDFs</li>
+            </ul>
+          </div>
+        </aside>
 
-        <div className="features-list">
-          <h3>Admin Features:</h3>
-          <ul>
-            <li>✓ View all registered customers</li>
-            <li>✓ Download customer data as PDF</li>
-            <li>✓ Structured customer information</li>
-            <li>✓ Secure logout</li>
-          </ul>
+        <div className="login-card">
+          <div className="login-header">
+            <h1>🔐 Admin Portal</h1>
+            <p>Secure Access to Customer Dashboard</p>
+          </div>
+
+          <form onSubmit={handleSubmit(onSubmit)} className="login-form">
+            {error && <div className="error-alert">{error}</div>}
+
+            <div className="form-group">
+              <label htmlFor="email">Email Address</label>
+              <input
+                id="email"
+                type="email"
+                placeholder="admin@kyc.com"
+                {...register('email')}
+                className={errors.email ? 'input-error' : ''}
+                disabled={isLoading}
+              />
+              {errors.email && <span className="error-message">{errors.email.message}</span>}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="password">Password</label>
+              <input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                {...register('password')}
+                className={errors.password ? 'input-error' : ''}
+                disabled={isLoading}
+              />
+              {errors.password && <span className="error-message">{errors.password.message}</span>}
+            </div>
+
+            <button
+              type="submit"
+              className="login-button"
+              disabled={isLoading}
+            >
+              {isLoading ? '⏳ Logging in...' : '🔓 Login'}
+            </button>
+          </form>
+
+          <div className="demo-section">
+            <button
+              type="button"
+              className="demo-toggle"
+              onClick={() => setShowDemoCredentials(!showDemoCredentials)}
+            >
+              {showDemoCredentials ? '✕ Hide Demo Credentials' : '📝 Show Demo Credentials'}
+            </button>
+
+            {showDemoCredentials && (
+              <div className="demo-credentials">
+                <div className="credential-item">
+                  <span className="label">Email:</span>
+                  <span className="value">admin@kyc.com</span>
+                </div>
+                <div className="credential-item">
+                  <span className="label">Password:</span>
+                  <span className="value">admin123</span>
+                </div>
+                <p className="demo-note">
+                  💡 Use these credentials to access the admin dashboard and view all registered customers.
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className="features-list">
+            <h3>Admin Features:</h3>
+            <ul>
+              <li>✓ View all registered customers</li>
+              <li>✓ Download customer data as PDF</li>
+              <li>✓ Structured customer information</li>
+              <li>✓ Secure logout</li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>

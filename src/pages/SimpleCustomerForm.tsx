@@ -48,7 +48,11 @@ const SuccessCard: React.FC<SuccessCardProps> = ({ submissionId, onClose }) => (
   </div>
 );
 
-export function SimpleCustomerForm() {
+interface SimpleCustomerFormProps {
+  readonly onNavigateToLanding?: () => void;
+}
+
+export function SimpleCustomerForm({ onNavigateToLanding }: SimpleCustomerFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionId, setSubmissionId] = useState<string | null>(null);
 
@@ -90,160 +94,213 @@ export function SimpleCustomerForm() {
   }
 
   return (
-    <div className="simple-form-container">
-      <div className="form-header">
-        <h1>Customer Information Form</h1>
-        <p>Please provide your basic information (8 fields)</p>
-      </div>
-
-      <form onSubmit={handleSubmit(onSubmit)} className="simple-form">
-        {/* Row 1: First Name & Last Name */}
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="firstName">First Name *</label>
-            <input
-              id="firstName"
-              type="text"
-              placeholder="John"
-              {...register("firstName")}
-              className={errors.firstName ? "input-error" : ""}
-            />
-            {errors.firstName && (
-              <span className="error-message">{errors.firstName.message}</span>
-            )}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="lastName">Last Name *</label>
-            <input
-              id="lastName"
-              type="text"
-              placeholder="Doe"
-              {...register("lastName")}
-              className={errors.lastName ? "input-error" : ""}
-            />
-            {errors.lastName && (
-              <span className="error-message">{errors.lastName.message}</span>
-            )}
-          </div>
-        </div>
-
-        {/* Row 2: Email & Phone */}
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="email">Email *</label>
-            <input
-              id="email"
-              type="email"
-              placeholder="john@example.com"
-              {...register("email")}
-              className={errors.email ? "input-error" : ""}
-            />
-            {errors.email && (
-              <span className="error-message">{errors.email.message}</span>
-            )}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="phone">Phone Number *</label>
-            <input
-              id="phone"
-              type="tel"
-              placeholder="+1-555-123-4567"
-              {...register("phone")}
-              className={errors.phone ? "input-error" : ""}
-            />
-            {errors.phone && (
-              <span className="error-message">{errors.phone.message}</span>
-            )}
-          </div>
-        </div>
-
-        {/* Row 3: Date of Birth & Nationality */}
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="dateOfBirth">Date of Birth *</label>
-            <input
-              id="dateOfBirth"
-              type="date"
-              {...register("dateOfBirth")}
-              className={errors.dateOfBirth ? "input-error" : ""}
-            />
-            {errors.dateOfBirth && (
-              <span className="error-message">
-                {errors.dateOfBirth.message}
-              </span>
-            )}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="nationality">Nationality *</label>
-            <select
-              id="nationality"
-              {...register("nationality")}
-              className={errors.nationality ? "input-error" : ""}
-            >
-              <option value="">Select Nationality</option>
-              <option value="United States">United States</option>
-              <option value="United Kingdom">United Kingdom</option>
-              <option value="Canada">Canada</option>
-              <option value="Australia">Australia</option>
-              <option value="Germany">Germany</option>
-              <option value="France">France</option>
-              <option value="India">India</option>
-              <option value="China">China</option>
-              <option value="Japan">Japan</option>
-              <option value="Other">Other</option>
-            </select>
-            {errors.nationality && (
-              <span className="error-message">{errors.nationality.message}</span>
-            )}
-          </div>
-        </div>
-
-        {/* Row 4: Address */}
-        <div className="form-group full-width">
-          <label htmlFor="address">Street Address *</label>
-          <input
-            id="address"
-            type="text"
-            placeholder="123 Main Street, Apt 4B"
-            {...register("address")}
-            className={errors.address ? "input-error" : ""}
-          />
-          {errors.address && (
-            <span className="error-message">{errors.address.message}</span>
-          )}
-        </div>
-
-        {/* Row 5: City */}
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="city">City *</label>
-            <input
-              id="city"
-              type="text"
-              placeholder="New York"
-              {...register("city")}
-              className={errors.city ? "input-error" : ""}
-            />
-            {errors.city && (
-              <span className="error-message">{errors.city.message}</span>
-            )}
-          </div>
-        </div>
-
-        {/* Submit Button */}
+    <div className="form-page-container">
+      <div className="form-page-gradient" />
+      {/* Header with Logo */}
+      <header className="form-page-header">
         <button
-          type="submit"
-          className="submit-btn"
-          disabled={isSubmitting}
+          className="logo-button"
+          onClick={onNavigateToLanding}
+          title="Back to home"
         >
-          {isSubmitting ? "Submitting..." : "Submit Information"}
+          <span className="logo-icon">🚀</span>
+          <span className="logo-text">KYC System</span>
         </button>
+        <nav className="form-nav">
+          <button className="nav-link active">Customer Form</button>
+          <button className="nav-link" onClick={onNavigateToLanding}>
+            Back to Landing
+          </button>
+        </nav>
+      </header>
 
-        <p className="required-note">* Required fields</p>
-      </form>
+      <div className="form-content-grid">
+        <aside className="form-insights">
+          <p className="insight-eyebrow">Trusted flow</p>
+          <h2>Submit once, stay compliant everywhere</h2>
+          <p>
+            This lightweight form feeds our AI summarizer and admin review console.
+            Every required datapoint is validated in real-time and encrypted at rest.
+          </p>
+          <ul>
+            <li>⏱ Average completion time: 3 minutes</li>
+            <li>🤖 Instant summary for the review team</li>
+            <li>🔒 ISO 27001 aligned storage</li>
+          </ul>
+          <div className="insight-card">
+            <p>Next steps</p>
+            <strong>Receive your submission ID + live status tracking link.</strong>
+          </div>
+        </aside>
+
+        {/* Main Form Container */}
+        <div className="simple-form-container">
+          <div className="form-wrapper">
+            <div className="form-header">
+              <h1>Complete Your KYC Verification</h1>
+              <p>Provide your information to get verified in minutes</p>
+            </div>
+
+            <form onSubmit={handleSubmit(onSubmit)} className="simple-form">
+            {/* Row 1: First Name & Last Name */}
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="firstName">First Name *</label>
+                <input
+                  id="firstName"
+                  type="text"
+                  placeholder="John"
+                  {...register("firstName")}
+                  className={errors.firstName ? "input-error" : ""}
+                />
+                {errors.firstName && (
+                  <span className="error-message">{errors.firstName.message}</span>
+                )}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="lastName">Last Name *</label>
+                <input
+                  id="lastName"
+                  type="text"
+                  placeholder="Doe"
+                  {...register("lastName")}
+                  className={errors.lastName ? "input-error" : ""}
+                />
+                {errors.lastName && (
+                  <span className="error-message">{errors.lastName.message}</span>
+                )}
+              </div>
+            </div>
+
+            {/* Row 2: Email & Phone */}
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="email">Email *</label>
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="john@example.com"
+                  {...register("email")}
+                  className={errors.email ? "input-error" : ""}
+                />
+                {errors.email && (
+                  <span className="error-message">{errors.email.message}</span>
+                )}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="phone">Phone Number *</label>
+                <input
+                  id="phone"
+                  type="tel"
+                  placeholder="+1-555-123-4567"
+                  {...register("phone")}
+                  className={errors.phone ? "input-error" : ""}
+                />
+                {errors.phone && (
+                  <span className="error-message">{errors.phone.message}</span>
+                )}
+              </div>
+            </div>
+
+            {/* Row 3: Date of Birth & Nationality */}
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="dateOfBirth">Date of Birth *</label>
+                <input
+                  id="dateOfBirth"
+                  type="date"
+                  {...register("dateOfBirth")}
+                  className={errors.dateOfBirth ? "input-error" : ""}
+                />
+                {errors.dateOfBirth && (
+                  <span className="error-message">
+                    {errors.dateOfBirth.message}
+                  </span>
+                )}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="nationality">Nationality *</label>
+                <select
+                  id="nationality"
+                  {...register("nationality")}
+                  className={errors.nationality ? "input-error" : ""}
+                >
+                  <option value="">Select Nationality</option>
+                  <option value="United States">United States</option>
+                  <option value="United Kingdom">United Kingdom</option>
+                  <option value="Canada">Canada</option>
+                  <option value="Australia">Australia</option>
+                  <option value="Germany">Germany</option>
+                  <option value="France">France</option>
+                  <option value="India">India</option>
+                  <option value="China">China</option>
+                  <option value="Japan">Japan</option>
+                  <option value="Other">Other</option>
+                </select>
+                {errors.nationality && (
+                  <span className="error-message">{errors.nationality.message}</span>
+                )}
+              </div>
+            </div>
+
+            {/* Row 4: Address */}
+            <div className="form-group full-width">
+              <label htmlFor="address">Street Address *</label>
+              <input
+                id="address"
+                type="text"
+                placeholder="123 Main Street, Apt 4B"
+                {...register("address")}
+                className={errors.address ? "input-error" : ""}
+              />
+              {errors.address && (
+                <span className="error-message">{errors.address.message}</span>
+              )}
+            </div>
+
+            {/* Row 5: City */}
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="city">City *</label>
+                <input
+                  id="city"
+                  type="text"
+                  placeholder="New York"
+                  {...register("city")}
+                  className={errors.city ? "input-error" : ""}
+                />
+                {errors.city && (
+                  <span className="error-message">{errors.city.message}</span>
+                )}
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              className="submit-btn"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <span className="loading-spinner"></span>
+                  Submitting...
+                </>
+              ) : (
+                <>
+                  <span>🚀</span> Submit Information
+                </>
+              )}
+            </button>
+
+            <p className="required-note">* Required fields</p>
+          </form>
+        </div>
+      </div>
+      </div>
     </div>
   );
 }

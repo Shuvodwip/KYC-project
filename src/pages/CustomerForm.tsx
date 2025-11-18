@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { JSX } from "react";
 import { kycValidationSchema } from "../types/validation";
 import { kycAPI } from "../services/api";
 import "../styles/CustomerForm.css";
@@ -138,7 +139,7 @@ function isPhoneField(fieldName: keyof FormDataType): boolean {
 
 interface FieldRendererProps {
   fieldName: keyof FormDataType;
-  register: ReturnType<typeof useForm>["register"];
+  register: ReturnType<typeof useForm<FormDataType>>["register"];
   errors: Record<string, any>;
   isOptional: boolean;
 }
