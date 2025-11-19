@@ -5,12 +5,13 @@ import { KYCService } from '../services/kycService.js'
 import { generateCustomerPDFBuffer } from '../services/pdfService.js'
 import { sendCustomerPdfEmail } from '../services/emailService.js'
 import type { PdfJobPayload } from '../queues/pdfQueue.js'
+import logger from '../utils/logger.js'
 
 async function startWorker() {
   await connectDB()
 
   await consumePdfJobs(async (job: PdfJobPayload) => {
-    console.log(`📄 Processing PDF job for ${job.submissionId}`)
+    logger.info('Processing PDF job', { submissionId: job.submissionId })
 
     const submission = await KYCService.getSubmission(job.submissionId)
 
@@ -42,26 +43,29 @@ async function startWorker() {
       attachmentBuffer: pdfBuffer,
     })
 
-    console.log(`✅ PDF emailed to ${job.customerEmail} for submission ${job.submissionId}`)
+    logger.info('PDF emailed successfully', {
+      submissionId: job.submissionId,
+      email: job.customerEmail,
+    })
   })
 }
 
 process.on('SIGINT', async () => {
-  console.log('Shutting down PDF worker...')
+  logger.info('Shutting down PDF worker (SIGINT)')
   await closePdfQueue()
   await disconnectDB()
   process.exit(0)
 })
 
 process.on('SIGTERM', async () => {
-  console.log('Shutting down PDF worker...')
+  logger.info('Shutting down PDF worker (SIGTERM)')
   await closePdfQueue()
   await disconnectDB()
   process.exit(0)
 })
 
 await startWorker().catch(async (error) => {
-  console.error('PDF worker failed to start', error)
+  logger.error('PDF worker failed to start', { error })
   await closePdfQueue()
   await disconnectDB()
   process.exit(1)

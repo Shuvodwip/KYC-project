@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import type { ApiResponse } from '../utils/types.js';
+import logger from '../utils/logger.js';
 
 interface AppError extends Error {
   status?: number;
@@ -26,7 +27,7 @@ export function errorHandler(
     timestamp: new Date().toISOString(),
   };
 
-  console.error(`[${status}] ${message}`, error);
+  logger.error(`[${status}] ${message}`, { error });
   res.status(status).json(response);
 }
 
@@ -61,6 +62,7 @@ export function validationErrorHandler(
       timestamp: new Date().toISOString(),
     };
 
+    logger.warn('Validation failed', { error: error.message });
     res.status(400).json(response);
   } else {
     next(error);

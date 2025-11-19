@@ -9,7 +9,8 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "lint": "eslint src --ext .ts",
-    "worker:pdf": "node --loader ts-node/esm src/workers/pdfWorker.ts"
+    "worker:pdf": "node --loader ts-node/esm src/workers/pdfWorker.ts",
+    "test": "jest"
   },
   "dependencies": {
     "amqplib": "^0.10.9",
@@ -23,9 +24,11 @@
     "mongoose": "^8.19.3",
     "nodemailer": "^7.0.10",
     "pdfkit": "^0.13.0",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "winston": "^3.11.0"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.12",
     "@types/amqplib": "^0.10.8",
     "@types/cors": "^2.8.19",
     "@types/express": "^4.17.25",
@@ -34,6 +37,8 @@
     "@types/nodemailer": "^7.0.4",
     "@types/pdfkit": "^0.12.11",
     "@types/uuid": "^9.0.7",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.3.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.2.2"
   }

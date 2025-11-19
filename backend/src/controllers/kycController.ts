@@ -4,6 +4,7 @@ import { generateCustomerPDF } from '../services/pdfService.js';
 import { generateKYCSummary } from '../services/llmService.js';
 import { enqueuePdfJob } from '../queues/pdfQueue.js';
 import type { KYCFormData, ApiResponse, SubmissionResponse } from '../utils/types.js';
+import logger from '../utils/logger.js';
 
 /**
  * Submit KYC form data
@@ -31,8 +32,10 @@ export async function submitKYC(
       timestamp: new Date().toISOString(),
     };
 
+    logger.info('KYC submission created', { id: submission.id })
     res.status(201).json(response);
   } catch (error) {
+    logger.error('Failed to submit KYC', { error });
     next(error);
   }
 }
@@ -72,6 +75,7 @@ export async function getSubmission(
 
     res.status(200).json(response);
   } catch (error) {
+    logger.error('Failed to fetch submission', { id: req.params.id, error });
     next(error);
   }
 }
@@ -209,8 +213,10 @@ export async function exportCustomerPDF(
       `attachment; filename="customer-${customerData.firstName}-${customerData.lastName}.pdf"`
     );
 
+    logger.info('PDF generated for customer', { id: submission.id })
     pdfStream.pipe(res);
   } catch (error) {
+    logger.error('Failed to export customer PDF', { id: req.params.id, error });
     next(error);
   }
 }
@@ -247,6 +253,8 @@ export async function emailCustomerPDF(
       lastName: submission.data?.lastName || '',
     });
 
+    logger.info('Queued PDF email job', { id: submission.id, email });
+
     res.status(202).json({
       success: true,
       status: 202,
@@ -258,6 +266,7 @@ export async function emailCustomerPDF(
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
+    logger.error('Failed to queue PDF email', { id: req.params.id, error });
     next(error);
   }
 }

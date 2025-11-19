@@ -9,6 +9,7 @@ import { errorHandler, notFound } from './middleware/errorHandler.js';
 import kycRoutes from './routes/kycRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import { initPdfQueue, closePdfQueue } from './queues/pdfQueue.js';
+import logger, { requestLogger } from './utils/logger.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -40,11 +41,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // Request logging
-app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
-  const timestamp = new Date().toISOString();
-  console.log(`[${timestamp}] ${req.method} ${req.path}`);
-  next();
-});
+app.use(requestLogger);
 
 // ============================================================================
 // Routes
@@ -102,38 +99,26 @@ async function startServer() {
 
     // Start server
     app.listen(PORT, () => {
-      console.log(`\n${'='.repeat(60)}`);
-      console.log(`🚀 KYC Backend Server Running`);
-      console.log(`${'='.repeat(60)}`);
-      console.log(`📍 Server: http://localhost:${PORT}`);
-      console.log(`🌐 CORS Origin: ${FRONTEND_URL}`);
-      console.log(`${'='.repeat(60)}\n`);
-
-      console.log('Endpoints:');
-      console.log(`  ✓ POST   /api/kyc/submit        - Submit KYC data`);
-      console.log(`  ✓ GET    /api/kyc/status/:id    - Get submission status`);
-      console.log(`  ✓ GET    /api/kyc/all           - Get all submissions`);
-      console.log(`  ✓ GET    /api/kyc/stats         - Get statistics`);
-      console.log(`  ✓ GET    /api/kyc/search        - Search submissions`);
-      console.log(`  ✓ GET    /health                - Health check`);
-      console.log('');
+      logger.info(`KYC Backend Server Running on http://localhost:${PORT}`, {
+        corsOrigin: FRONTEND_URL,
+      })
     });
   } catch (error) {
-    console.error('❌ Failed to start server:', error);
+    logger.error('Failed to start server', { error });
     process.exit(1);
   }
 }
 
 // Handle graceful shutdown
 process.on('SIGTERM', async () => {
-  console.log('\nSIGTERM received, shutting down gracefully...');
+  logger.info('SIGTERM received, shutting down gracefully...');
   await disconnectDB();
   await closePdfQueue();
   process.exit(0);
 });
 
 process.on('SIGINT', async () => {
-  console.log('\nSIGINT received, shutting down gracefully...');
+  logger.info('SIGINT received, shutting down gracefully...');
   await disconnectDB();
   await closePdfQueue();
   process.exit(0);

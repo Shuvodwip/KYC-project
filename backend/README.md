@@ -76,6 +76,24 @@ The API will enqueue jobs via `POST /api/kyc/export/:id/email`, and the worker w
 
 ---
 
+### 5. Run Unit Tests
+
+```bash
+npm run test
+```
+
+Tests use Jest + ts-jest and cover critical utilities like the auth middleware and PDF generation service.
+
+---
+
+### 6. File-Based Logging
+
+- Logs are written to `logs/combined.log` and `logs/error.log` via Winston.
+- Request logs include method, path, status code, and duration.
+- The `logs/` directory is created automatically (and ignored by git).
+
+---
+
 ## 📋 API Endpoints
 
 ### 1. Submit KYC Data
