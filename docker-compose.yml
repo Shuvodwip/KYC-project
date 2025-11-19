@@ -1,0 +1,43 @@
+version: '3.9'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+
+  backend:
+    build:
+      context: ./backend
+    image: kyc-backend
+    env_file:
+      - ./backend/.env
+    environment:
+      RABBITMQ_URL: amqp://rabbitmq:5672
+    depends_on:
+      - rabbitmq
+    ports:
+      - '5000:5000'
+
+  worker:
+    image: kyc-backend
+    command: ['node', 'dist/workers/pdfWorker.js']
+    env_file:
+      - ./backend/.env
+    environment:
+      RABBITMQ_URL: amqp://rabbitmq:5672
+    depends_on:
+      - rabbitmq
+      - backend
+
+  frontend:
+    build:
+      context: .
+      args:
+        VITE_API_URL: http://backend:5000/api
+    image: kyc-frontend
+    ports:
+      - '5173:80'
+    depends_on:
+      - backend
