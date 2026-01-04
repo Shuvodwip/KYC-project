@@ -3,7 +3,6 @@ import { LandingPage } from './pages/LandingPage'
 import { SimpleCustomerForm } from './pages/SimpleCustomerForm'
 import { AdminLoginPage } from './pages/AdminLoginPage'
 import { AdminDashboard } from './pages/AdminDashboard'
-import './App.css'
 
 type Page = 'landing' | 'form' | 'admin-login' | 'admin-dashboard'
 
@@ -24,10 +23,10 @@ function App() {
   }
 
   return (
-    <div className="app-container">
-      <main className="app-main">
+    <div className="min-h-screen w-full">
+      <main className="w-full">
         {currentPage === 'landing' && (
-          <LandingPage 
+          <LandingPage
             onGetStarted={() => setCurrentPage('form')}
             onAdminLogin={() => setCurrentPage('admin-login')}
           />
