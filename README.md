@@ -252,7 +252,7 @@ MIT License - see [LICENSE](LICENSE) file
 ## 👥 Author
 
 **Your Name**
-- GitHub: [@YOUR_USERNAME](https://github.com/YOUR_USERNAME)
+- GitHub: [@Shuvodwip](https://github.com/Shuvodwip)
 
 ## 🙏 Acknowledgments
 
